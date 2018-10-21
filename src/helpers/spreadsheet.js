@@ -1,16 +1,18 @@
 import config from "../../config";
 
-export function load(callback) {
+export function load(callback, data) {
+  const range = "시트1" + data;
+  console.log(range);
   window.gapi.client.load("sheets", "v4", () => {
     window.gapi.client.sheets.spreadsheets.values
       .get({
         spreadsheetId: config.spreadsheetId,
-        range: "Sheet0!A2:A"
+        range: "시트1!A1:A5",
+        majorDimension: "COLUMNS"
       })
       .then(
         response => {
-          console.log(response);
-          const emailLists = response.result.values;
+          const emailLists = response.result.values[0];
           // const cars =
           //   data.map(car => ({
           //     year: car[0],
@@ -27,3 +29,5 @@ export function load(callback) {
       );
   });
 }
+
+module.hot.accept();

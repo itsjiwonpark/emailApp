@@ -8,37 +8,37 @@ import { Link } from "react-router-dom";
 class Main extends Component {
   state = {
     // currentPage: this.props.match.params.page,
-    emailLists: [],
-    error: null
+    emailLists: []
   };
 
   componentDidMount() {
+    console.log(this.props.match.path.page);
     if (this.props.match.path === "/") {
       window.location.pathname = "/1";
     }
     window.gapi.load("client", this.initClient);
-    axios.get;
+    // axios.get;
   }
 
   initClient = () => {
     window.gapi.client
       .init({
         apiKey: config.apiKey,
-        clientId: config.clientId,
-        scope: config.scope,
+        // clientId: config.clientId,
+        // scope: config.scope,
         discoveryDocs: config.discoveryDocs
       })
       .then(() => {
-        load(this.onLoad);
+        load(this.onLoad, "hi");
       });
   };
 
   onLoad = (data, error) => {
     if (data) {
       const emailLists = data;
-      this.setState({ emailLists });
+      this.setState(emailLists);
     } else {
-      this.setState({ error });
+      console.log(error);
     }
   };
 
