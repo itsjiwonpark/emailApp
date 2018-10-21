@@ -8,6 +8,7 @@ class Header extends Component {
     email: ""
   };
 
+
   GoogleAuth;
 
   componentDidMount() {
@@ -61,6 +62,7 @@ class Header extends Component {
       alert("Invalid Email Address Format");
       this.setState({ email: "" });
     }
+
   };
 
   render() {
