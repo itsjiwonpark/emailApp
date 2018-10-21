@@ -3,106 +3,56 @@ import Header from "./Header";
 import axios from "axios";
 import config from "../../config.js";
 import "../style.css";
-import { load } from "../helpers/spreadsheet";
+
 import { Link } from "react-router-dom";
 
 class Main extends Component {
   state = {
-    // currentPage: this.props.match.params.page,
-    emailLists: []
+    emailLists: [],
+    prev: null,
+    cur: this.props.match.params.page,
+    next: null
   };
 
-  GoogleAuth;
-  isAuthorized;
-  currentApiRequest;
-  // componentDidMount() {
-  //   const url = `https://sheets.googleapis.com/v4/spreadsheets/1boLea3iXMGz4E_8Anh6_00J8OllMRMIFZHhpUr5d8qY/values/시트1!A1:A5?key=AIzaSyCzr9-9G-HzdTZWIjirNuROIY9OcNSQ0zA&majorDimension=COLUMNS`;
-  //   axios
-  //     .get(url)
-  //     .then(res => {
-  //       this.setState({ emailLists: res.data.values[0] });
-  //     })
-  //     .catch(err => {
-  //       console.log(err);
-  //     });
-  // }
   componentDidMount() {
-    console.log(this.props.match.path.page);
     if (this.props.match.path === "/") {
       window.location.pathname = "/1";
     }
-    window.gapi.load("client:auth2", this.initClient);
-    // axios.get;
+    const cur = this.props.match.params.page * 1;
+    const prev = cur === 1 ? cur : cur - 1;
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${
+      config.spreadsheetId
+    }/values/시트1!A${cur * 5 - 4}:A${cur * 5}?key=${
+      config.apiKey
+    }&majorDimension=COLUMNS`;
+    axios
+      .get(url)
+      .then(res => {
+        const emailLists = res.data.values[0];
+        const next = emailLists.length === 5 ? cur + 1 : cur;
+        this.setState({
+          emailLists,
+          cur,
+          prev,
+          next
+        });
+      })
+      .catch(err => {
+        console.log(err);
+      });
   }
 
-  initClient = () => {
-    window.gapi.client
-      .init({
-        apiKey: "AIzaSyAM27CQMWKb0UatEDt1-kzcJGH0Px9hm8M",
-        clientId:
-          "49894146732-46flodiqogaqnlivf27cspljv9j1jod3.apps.googleusercontent.com",
-        scope: "https://www.googleapis.com/auth/spreadsheets",
-        discoveryDocs: [
-          "https://sheets.googleapis.com/$discovery/rest?version=v4"
-        ]
-      })
-      .then(() => {
-        this.GoogleAuth = gapi.auth2.getAuthInstance();
-        if (!this.GoogleAuth.isSignedIn.get()) {
-          this.GoogleAuth.signIn().then(res => {
-            console.log(res, "이건 프라미스게요 아니게요");
-          });
-        }
-        return this.GoogleAuth.isSignedIn.get();
-        // console.log(this.GoogleAuth, "middleeee");
-      })
-      .then(res => {
-        if (!res) {
-        }
-        this.nowDoIt();
-        load(this.onLoad, "hi");
-      });
-  };
-  sendAuthorizedApiRequest = requestDetails => {
-    this.currentApiRequest = requestDetails;
-    if (this.isAuthorized) {
-      load(this.onLoad, "hi");
-      // Make API request
-      // gapi.client.request(requestDetails)
-      // Reset currentApiRequest variable.
-      this.currentApiRequest = {};
-    } else {
-      this.GoogleAuth.signIn();
-    }
-  };
-
-  nowDoIt = () => {
-    console.log("isSignedIn");
-    var user = this.GoogleAuth.currentUser.get();
-    console.log(user);
-    // if (isSignedIn) {
-    //   this.isAuthorized = true;
-
-    //   // if (this.currentApiRequest) {
-    //   //   this.sendAuthorizedApiRequest(this.currentApiRequest);
-    //   // }
-    // } else {
-    //   this.isAuthorized = false;
-    // }
-  };
-
-  onLoad = (data, error) => {
-    if (data) {
-      console.log(data);
-      // const emailLists = data;
-      // this.setState(emailLists);
-    } else {
-      console.log(error);
+  _changePage = e => {
+    const name = e.target.getAttribute("name");
+    console.log(this.state[name], this.state.cur);
+    if (this.state[name] !== this.state.cur) {
+      window.location.reload();
     }
   };
 
   render() {
-    const { emailLists } = this.state;
+    const { emailLists, prev, cur, next } = this.state;
+    console.log(prev, cur, next);
     return (
       <div className="main">
         <Header />
@@ -110,11 +60,15 @@ class Main extends Component {
           <section className="second" />
           <div className="second-logo">Email List</div>
           <div className="second-btn_container">
-            <Link to="/">
-              <div className="btn_left" />
+            <Link to={"/" + prev} onClick={this._changePage}>
+              <div name="prev" className="btn_left">
+                👈🏿
+              </div>
             </Link>
-            <Link to="/">
-              <div className="btn_right" />
+            <Link to={"/" + next} onClick={this._changePage}>
+              <div name="next" className="btn_right">
+                👉🏿
+              </div>
             </Link>
           </div>
           <section className="third">

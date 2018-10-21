@@ -9,7 +9,7 @@ class Header extends Component {
 
   GoogleAuth;
   isAuthorized;
-  currentApiRequest;
+  // currentApiRequest;
 
   componentDidMount() {
     window.gapi.load("client:auth2", this.initClient);
@@ -79,18 +79,6 @@ class Header extends Component {
       console.log(error);
     }
   };
-
-  componentDidMount() {
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/1boLea3iXMGz4E_8Anh6_00J8OllMRMIFZHhpUr5d8qY/values/시트1!A1:A5?key=AIzaSyCzr9-9G-HzdTZWIjirNuROIY9OcNSQ0zA&majorDimension=COLUMNS`;
-    axios
-      .get(url)
-      .then(res => {
-        // console.log(res.data.values[0], "짱짱짱 엄청나");
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  }
 
   _putEmailAddress = e => {
     const email = e.target.value;
