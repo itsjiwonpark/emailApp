@@ -14,6 +14,20 @@ class Main extends Component {
     next: null
   };
 
+  GoogleAuth;
+  isAuthorized;
+  currentApiRequest;
+  // componentDidMount() {
+  //   const url = `https://sheets.googleapis.com/v4/spreadsheets/1boLea3iXMGz4E_8Anh6_00J8OllMRMIFZHhpUr5d8qY/values/시트1!A1:A5?key=AIzaSyCzr9-9G-HzdTZWIjirNuROIY9OcNSQ0zA&majorDimension=COLUMNS`;
+  //   axios
+  //     .get(url)
+  //     .then(res => {
+  //       this.setState({ emailLists: res.data.values[0] });
+  //     })
+  //     .catch(err => {
+  //       console.log(err);
+  //     });
+  // }
   componentDidMount() {
     if (this.props.match.path === "/") {
       window.location.pathname = "/1";
@@ -48,6 +62,7 @@ class Main extends Component {
     console.log(this.state[name], this.state.cur);
     if (this.state[name] !== this.state.cur) {
       window.location.reload();
+
     }
   };
 
