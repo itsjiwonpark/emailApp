@@ -28,8 +28,9 @@ class Main extends Component {
     axios
       .get(url)
       .then(res => {
+        console.log(res.data);
         const emailLists = res.data.values[0];
-        const next = emailLists.length === 5 ? cur + 1 : cur;
+        const next = emailLists.length === 5 && emailLists ? cur + 1 : cur;
         this.setState({
           emailLists,
           cur,

@@ -1,8 +1,7 @@
 import config from "../../config";
 
 export function load(callback, data) {
-  const range = "시트1" + data;
-  console.log(range);
+  const email = data;
   window.gapi.client.load("sheets", "v4", () => {
     window.gapi.client.sheets.spreadsheets.values
       .append({
@@ -10,7 +9,7 @@ export function load(callback, data) {
         range: "시트1!A1",
         valueInputOption: "USER_ENTERED",
         majorDimension: "COLUMNS",
-        values: [["hello"]]
+        values: [[email]]
       })
       .then(
         response => {

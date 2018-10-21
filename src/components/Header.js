@@ -38,8 +38,8 @@ class Header extends Component {
       .then(res => {
         if (!res) {
         }
-        this.nowDoIt();
-        load(this.onLoad, "hi");
+        // this.nowDoIt();
+        // load(this.onLoad, "hi");
       });
   };
   sendAuthorizedApiRequest = requestDetails => {
@@ -55,26 +55,25 @@ class Header extends Component {
     }
   };
 
-  nowDoIt = () => {
-    console.log("isSignedIn");
-    var user = this.GoogleAuth.currentUser.get();
-    console.log(user);
-    // if (isSignedIn) {
-    //   this.isAuthorized = true;
+  // nowDoIt = () => {
+  //   console.log("isSignedIn");
+  //   var user = this.GoogleAuth.currentUser.get();
+  //   console.log(user);
+  //   // if (isSignedIn) {
+  //   //   this.isAuthorized = true;
 
-    //   // if (this.currentApiRequest) {
-    //   //   this.sendAuthorizedApiRequest(this.currentApiRequest);
-    //   // }
-    // } else {
-    //   this.isAuthorized = false;
-    // }
-  };
+  //   //   // if (this.currentApiRequest) {
+  //   //   //   this.sendAuthorizedApiRequest(this.currentApiRequest);
+  //   //   // }
+  //   // } else {
+  //   //   this.isAuthorized = false;
+  //   // }
+  // };
 
   onLoad = (data, error) => {
     if (data) {
       console.log(data);
-      // const emailLists = data;
-      // this.setState(emailLists);
+      this.setState({ email: "" });
     } else {
       console.log(error);
     }
@@ -86,28 +85,15 @@ class Header extends Component {
   };
 
   _appendToSheet = () => {
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/1boLea3iXMGz4E_8Anh6_00J8OllMRMIFZHhpUr5d8qY/values/시트1!A1:append?key=AIzaSyCzr9-9G-HzdTZWIjirNuROIY9OcNSQ0zA&valueInputOption=USER_ENTERED`;
-    const email = this.state.email;
-    axios
-      .post(url, {
-        range: "시트1!A1",
-        majorDimension: "ROWS",
-        values: [[email]],
-        apiKey: "AIzaSyCzr9-9G-HzdTZWIjirNuROIY9OcNSQ0zA"
-      })
-      .then(res => {
-        console.log(res);
-      })
-      .catch(err => {
-        console.log(err);
-      });
+    load(this.onLoad, this.state.email);
   };
 
   render() {
+    const { email } = this.state;
     return (
       <div>
         <h1>I'm header</h1>
-        <input type="email" onChange={this._putEmailAddress} />
+        <input type="email" value={email} onChange={this._putEmailAddress} />
         <input type="button" onClick={this._appendToSheet} />
       </div>
     );
