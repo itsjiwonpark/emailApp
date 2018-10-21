@@ -2,13 +2,16 @@ import React, { Component } from "react";
 import Header from "./Header";
 import axios from "axios";
 import config from "../../config.js";
-import { load } from "../helpers/spreadsheet";
+import "../style.css";
+
 import { Link } from "react-router-dom";
 
 class Main extends Component {
   state = {
-    // currentPage: this.props.match.params.page,
-    emailLists: []
+    emailLists: [],
+    prev: null,
+    cur: this.props.match.params.page,
+    next: null
   };
 
   GoogleAuth;
@@ -26,91 +29,108 @@ class Main extends Component {
   //     });
   // }
   componentDidMount() {
-    console.log(this.props.match.path.page);
     if (this.props.match.path === "/") {
       window.location.pathname = "/1";
     }
-    window.gapi.load("client:auth2", this.initClient);
-    // axios.get;
+    const cur = this.props.match.params.page * 1;
+    const prev = cur === 1 ? cur : cur - 1;
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${
+      config.spreadsheetId
+    }/values/시트1!A${cur * 5 - 4}:A${cur * 5}?key=${
+      config.apiKey
+    }&majorDimension=COLUMNS`;
+    axios
+      .get(url)
+      .then(res => {
+        console.log(res.data);
+        const emailLists = res.data.values[0];
+        const next = emailLists.length === 5 && emailLists ? cur + 1 : cur;
+        this.setState({
+          emailLists,
+          cur,
+          prev,
+          next
+        });
+      })
+      .catch(err => {
+        console.log(err);
+      });
   }
 
-  initClient = () => {
-    window.gapi.client
-      .init({
-        apiKey: "AIzaSyAM27CQMWKb0UatEDt1-kzcJGH0Px9hm8M",
-        clientId:
-          "49894146732-46flodiqogaqnlivf27cspljv9j1jod3.apps.googleusercontent.com",
-        scope: "https://www.googleapis.com/auth/spreadsheets",
-        discoveryDocs: [
-          "https://sheets.googleapis.com/$discovery/rest?version=v4"
-        ]
-      })
-      .then(() => {
-        this.GoogleAuth = gapi.auth2.getAuthInstance();
-        // Listen for sign-in state changes.
-        this.GoogleAuth.isSignedIn.listen(this.updateSigninStatus);
-        console.log(this.GoogleAuth, "middleeee");
-        load(this.onLoad, "hi");
-      });
-  };
-  sendAuthorizedApiRequest = requestDetails => {
-    this.currentApiRequest = requestDetails;
-    if (this.isAuthorized) {
-      console.log("im the new one");
-      load(this.onLoad, "hi");
-      // Make API request
-      // gapi.client.request(requestDetails)
-      // Reset currentApiRequest variable.
-      this.currentApiRequest = {};
-    } else {
-      this.GoogleAuth.signIn();
-      console.log("am I used or what");
-    }
-  };
+  _changePage = e => {
+    const name = e.target.getAttribute("name");
+    console.log(this.state[name], this.state.cur);
+    if (this.state[name] !== this.state.cur) {
+      window.location.reload();
 
-  updateSigninStatus = isSignedIn => {
-    if (isSignedIn) {
-      this.isAuthorized = true;
-      if (this.currentApiRequest) {
-        this.sendAuthorizedApiRequest(this.currentApiRequest);
-      }
-    } else {
-      this.isAuthorized = false;
-    }
-  };
-
-  onLoad = (data, error) => {
-    if (data) {
-      console.log(data);
-      // const emailLists = data;
-      // this.setState(emailLists);
-    } else {
-      console.log(error);
     }
   };
 
   render() {
-    const { emailLists } = this.state;
+    const { emailLists, prev, cur, next } = this.state;
+    console.log(prev, cur, next);
     return (
       <div className="main">
         <Header />
         <div>
-          <section className="second" />
-          <div className="second-logo">Email List</div>
-          <div className="second-btn_container">
-            <Link to="/">
-              <div className="btn_left" />
-            </Link>
-            <Link to="/">
-              <div className="btn_right" />
-            </Link>
-          </div>
-          <section className="third">
-            <ul className="email_lists">
+          <section className="second section">
+            <div className="second logo o-line ib">EMAIL LIST</div>
+            <div className="second btn_container ib">
+              <Link to={"/" + prev} onClick={this._changePage}>
+                <div name="prev" className="second btn o-line ib ">
+                  {"<"}
+                </div>
+              </Link>
+              <Link to={"/" + next} onClick={this._changePage}>
+                <div name="next" className="second btn o-line ib">
+                  {">"}
+                </div>
+              </Link>
+            </div>
+          </section>
+          <section className="third section o-line">
+            <ul className="third ib email-lists o-line">
               {emailLists.map((e, i) => {
-                return <li key={i}>{e}</li>;
+                return (
+                  <li className="third address" key={i}>
+                    {e}
+                  </li>
+                );
               })}
             </ul>
+            <div className="third ib blocks-container o-line">
+              <div className="block container border">
+                <div className="col border h-center">
+                  <div className="v-center">
+                    <span className="item">item</span>
+                    <span className="item h100">item</span>
+                    <span className="item">item</span>
+                  </div>
+                </div>
+                <div className="col">
+                  <div className="row h33 border h-center">
+                    <div className="v-center">
+                      <span className="item">item</span>
+                    </div>
+                  </div>
+                  <div className="row h66 border">
+                    <div className="v-bottom item">item</div>
+                  </div>
+                </div>
+                <div className="col">
+                  <div className="row h33 ">
+                    <div className="row h33 border" />
+                    <div className="row h66">
+                      <div className="col w33 border" />
+                      <div className="col w66 border" />
+                    </div>
+                  </div>
+                  <div className="row h66 border">
+                    <div className="v-top item">item</div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </section>
         </div>
       </div>

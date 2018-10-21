@@ -1,52 +1,87 @@
 import React, { Component } from "react";
-import axios from "axios";
-// import "../style.scss";
+import { load } from "../helpers/spreadsheet";
+import btnImage from "../img/sent-512.png";
+import "../style.css";
 
 class Header extends Component {
   state = {
     email: ""
   };
+
+
+  GoogleAuth;
+
   componentDidMount() {
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/1boLea3iXMGz4E_8Anh6_00J8OllMRMIFZHhpUr5d8qY/values/시트1!A1:A5?key=AIzaSyCzr9-9G-HzdTZWIjirNuROIY9OcNSQ0zA&majorDimension=COLUMNS`;
-    axios
-      .get(url)
-      .then(res => {
-        // console.log(res.data.values[0], "짱짱짱 엄청나");
-      })
-      .catch(err => {
-        console.log(err);
-      });
+    window.gapi.load("client:auth2", this.initClient);
   }
+
+  initClient = () => {
+    window.gapi.client
+      .init({
+        apiKey: "AIzaSyAM27CQMWKb0UatEDt1-kzcJGH0Px9hm8M",
+        clientId:
+          "49894146732-46flodiqogaqnlivf27cspljv9j1jod3.apps.googleusercontent.com",
+        scope: "https://www.googleapis.com/auth/spreadsheets",
+        discoveryDocs: [
+          "https://sheets.googleapis.com/$discovery/rest?version=v4"
+        ]
+      })
+      .then(() => {
+        this.GoogleAuth = gapi.auth2.getAuthInstance();
+        if (!this.GoogleAuth.isSignedIn.get()) {
+          this.GoogleAuth.signIn();
+        }
+        return this.GoogleAuth.isSignedIn.get();
+      });
+  };
+
+  onLoad = (data, error) => {
+    if (data) {
+      console.log(data);
+      this.setState({ email: "" }, () => {
+        window.location.reload();
+      });
+    } else {
+      console.log(error);
+    }
+  };
 
   _putEmailAddress = e => {
     const email = e.target.value;
     this.setState({ email });
   };
 
-  _appendToSheet = () => {
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/1boLea3iXMGz4E_8Anh6_00J8OllMRMIFZHhpUr5d8qY/values/시트1!A1:append?key=AIzaSyCzr9-9G-HzdTZWIjirNuROIY9OcNSQ0zA&valueInputOption=USER_ENTERED`;
-    const email = this.state.email;
-    axios
-      .post(url, {
-        range: "시트1!A1",
-        majorDimension: "ROWS",
-        values: [[email]],
-        apiKey: "AIzaSyCzr9-9G-HzdTZWIjirNuROIY9OcNSQ0zA"
-      })
-      .then(res => {
-        console.log(res);
-      })
-      .catch(err => {
-        console.log(err);
-      });
+  _appendToSheet = e => {
+    e.preventDefault();
+    let { email } = this.state;
+    let atI = email.indexOf("@");
+    let dotI = email.indexOf(".");
+    if (atI !== -1 && atI < dotI) {
+      load(this.onLoad, email);
+    } else {
+      alert("Invalid Email Address Format");
+      this.setState({ email: "" });
+    }
+
   };
 
   render() {
+    const { email } = this.state;
     return (
-      <div>
-        <h1>I'm header</h1>
-        <input type="email" onChange={this._putEmailAddress} />
-        <input type="button" onClick={this._appendToSheet} />
+      <div className="first section o-line">
+        <div className="first title ib">EMAIL</div>
+        <form className="ib" onSubmit={this._appendToSheet}>
+          <input
+            type="email"
+            className="first input-box ib"
+            placeholder="example@email.com"
+            value={email}
+            onChange={this._putEmailAddress}
+          />
+          <button type="submit" className="first btn ib">
+            <img src={btnImage} className="first btn-img" />
+          </button>
+        </form>
       </div>
     );
   }
