@@ -9,9 +9,8 @@ export function load(callback, data) {
         spreadsheetId: config.spreadsheetId,
         range: "시트1!A1",
         valueInputOption: "USER_ENTERED",
-        resource: {
-          value: [["hi"]]
-        }
+        majorDimension: "COLUMNS",
+        values: [["hello"]]
       })
       .then(
         response => {
@@ -21,7 +20,7 @@ export function load(callback, data) {
         },
         response => {
           callback(false, response.result.error);
-          console.log(response.result.error);
+          console.log(response.result.error, "!!!!");
         }
       );
 

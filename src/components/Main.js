@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import Header from "./Header";
 import axios from "axios";
 import config from "../../config.js";
+import "../style.css";
 import { load } from "../helpers/spreadsheet";
 import { Link } from "react-router-dom";
 
@@ -47,16 +48,24 @@ class Main extends Component {
       })
       .then(() => {
         this.GoogleAuth = gapi.auth2.getAuthInstance();
-        // Listen for sign-in state changes.
-        this.GoogleAuth.isSignedIn.listen(this.updateSigninStatus);
-        console.log(this.GoogleAuth, "middleeee");
+        if (!this.GoogleAuth.isSignedIn.get()) {
+          this.GoogleAuth.signIn().then(res => {
+            console.log(res, "이건 프라미스게요 아니게요");
+          });
+        }
+        return this.GoogleAuth.isSignedIn.get();
+        // console.log(this.GoogleAuth, "middleeee");
+      })
+      .then(res => {
+        if (!res) {
+        }
+        this.nowDoIt();
         load(this.onLoad, "hi");
       });
   };
   sendAuthorizedApiRequest = requestDetails => {
     this.currentApiRequest = requestDetails;
     if (this.isAuthorized) {
-      console.log("im the new one");
       load(this.onLoad, "hi");
       // Make API request
       // gapi.client.request(requestDetails)
@@ -64,19 +73,22 @@ class Main extends Component {
       this.currentApiRequest = {};
     } else {
       this.GoogleAuth.signIn();
-      console.log("am I used or what");
     }
   };
 
-  updateSigninStatus = isSignedIn => {
-    if (isSignedIn) {
-      this.isAuthorized = true;
-      if (this.currentApiRequest) {
-        this.sendAuthorizedApiRequest(this.currentApiRequest);
-      }
-    } else {
-      this.isAuthorized = false;
-    }
+  nowDoIt = () => {
+    console.log("isSignedIn");
+    var user = this.GoogleAuth.currentUser.get();
+    console.log(user);
+    // if (isSignedIn) {
+    //   this.isAuthorized = true;
+
+    //   // if (this.currentApiRequest) {
+    //   //   this.sendAuthorizedApiRequest(this.currentApiRequest);
+    //   // }
+    // } else {
+    //   this.isAuthorized = false;
+    // }
   };
 
   onLoad = (data, error) => {
