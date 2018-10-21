@@ -11,7 +11,7 @@ class Header extends Component {
     axios
       .get(url)
       .then(res => {
-        console.log(res.data.values[0], "짱짱짱 엄청나");
+        // console.log(res.data.values[0], "짱짱짱 엄청나");
       })
       .catch(err => {
         console.log(err);
