@@ -12,7 +12,6 @@ class Header extends Component {
 
   componentDidMount() {
     window.gapi.load("client:auth2", this.initClient);
-    // axios.get;
   }
 
   initClient = () => {
@@ -32,14 +31,15 @@ class Header extends Component {
           this.GoogleAuth.signIn();
         }
         return this.GoogleAuth.isSignedIn.get();
-        // console.log(this.GoogleAuth, "middleeee");
       });
   };
 
   onLoad = (data, error) => {
     if (data) {
       console.log(data);
-      this.setState({ email: "" });
+      this.setState({ email: "" }, () => {
+        window.location.reload();
+      });
     } else {
       console.log(error);
     }
@@ -50,8 +50,17 @@ class Header extends Component {
     this.setState({ email });
   };
 
-  _appendToSheet = () => {
-    load(this.onLoad, this.state.email);
+  _appendToSheet = e => {
+    e.preventDefault();
+    let { email } = this.state;
+    let atI = email.indexOf("@");
+    let dotI = email.indexOf(".");
+    if (atI !== -1 && atI < dotI) {
+      load(this.onLoad, email);
+    } else {
+      alert("Invalid Email Address Format");
+      this.setState({ email: "" });
+    }
   };
 
   render() {
