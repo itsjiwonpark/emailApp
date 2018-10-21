@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { load } from "../helpers/spreadsheet";
+import btnImage from "../img/sent-512.png";
 import "../style.css";
 
 class Header extends Component {
@@ -8,8 +9,6 @@ class Header extends Component {
   };
 
   GoogleAuth;
-  isAuthorized;
-  // currentApiRequest;
 
   componentDidMount() {
     window.gapi.load("client:auth2", this.initClient);
@@ -34,41 +33,8 @@ class Header extends Component {
         }
         return this.GoogleAuth.isSignedIn.get();
         // console.log(this.GoogleAuth, "middleeee");
-      })
-      .then(res => {
-        if (!res) {
-        }
-        // this.nowDoIt();
-        // load(this.onLoad, "hi");
       });
   };
-  sendAuthorizedApiRequest = requestDetails => {
-    this.currentApiRequest = requestDetails;
-    if (this.isAuthorized) {
-      load(this.onLoad, "hi");
-      // Make API request
-      // gapi.client.request(requestDetails)
-      // Reset currentApiRequest variable.
-      this.currentApiRequest = {};
-    } else {
-      this.GoogleAuth.signIn();
-    }
-  };
-
-  // nowDoIt = () => {
-  //   console.log("isSignedIn");
-  //   var user = this.GoogleAuth.currentUser.get();
-  //   console.log(user);
-  //   // if (isSignedIn) {
-  //   //   this.isAuthorized = true;
-
-  //   //   // if (this.currentApiRequest) {
-  //   //   //   this.sendAuthorizedApiRequest(this.currentApiRequest);
-  //   //   // }
-  //   // } else {
-  //   //   this.isAuthorized = false;
-  //   // }
-  // };
 
   onLoad = (data, error) => {
     if (data) {
@@ -91,10 +57,20 @@ class Header extends Component {
   render() {
     const { email } = this.state;
     return (
-      <div>
-        <h1>I'm header</h1>
-        <input type="email" value={email} onChange={this._putEmailAddress} />
-        <input type="button" onClick={this._appendToSheet} />
+      <div className="first section o-line">
+        <div className="first title ib">EMAIL</div>
+        <form className="ib" onSubmit={this._appendToSheet}>
+          <input
+            type="email"
+            className="first input-box ib"
+            placeholder="example@email.com"
+            value={email}
+            onChange={this._putEmailAddress}
+          />
+          <button type="submit" className="first btn ib">
+            <img src={btnImage} className="first btn-img" />
+          </button>
+        </form>
       </div>
     );
   }
